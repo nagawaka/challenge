@@ -102,11 +102,18 @@ const filterList = (list) => {
   const queues = [];
 
   const sumEstimates = (item) => {
-    // sum estimates
-    count += Number(item.estimate);
     if (queues[index] == undefined) queues[index] = [];
-    queues[index].push(item.ID);
-    if (count >= 8) index++;
+    
+    count += Number(item.estimate);
+    if (count >= 8){
+      queues[index+1] = [];
+      if (count == 8) queues[index].push(item.ID);
+      else queues[index+1].push(item.ID);
+      count = 0;
+      index++;
+    } else {
+      queues[index].push(item.ID);
+    }
   }
 
   const filter = (item) => {
@@ -131,7 +138,3 @@ document.querySelector("#button").addEventListener("click", (evt) => {
 })
 
 render();
-// console.log(filterList(list));
-
-
-// document.querySelector("#debug").innerHTML = "output";
