@@ -29,9 +29,7 @@ const filter = (item) => {
 let count = 0;
 let index = 0;
 
-const queues = [
-  [],
-];
+const queues = [];
 
 list.filter(filter)
   .map((item) => {
