@@ -1,6 +1,6 @@
 let list = [
   {
-  "ID": 1,
+    "ID": 1,
     "description": "Importação de arquivos de fundos",
     "date_end": "2019-11-10 12:00:00",
     "estimate": 2,
@@ -24,6 +24,22 @@ const labels = {
   'estimate': "Tempo estimado"
 }
 
+const lastId = () => {
+  const sorted = list.sort((a, b) => a.ID < b.ID);
+  return sorted[0].ID + 1;
+}
+
+document.querySelector("#add").addEventListener('click', (evt) => {
+  evt.preventDefault();
+  list.push({
+    "ID": list.length > 0 ? lastId(list) : 1,
+    "description": "Importação de arquivos de fundos",
+    "date_end": "2019-11-10 12:00:00",
+    "estimate": 2,
+  });
+  render();
+})
+
 const render = () => {
   const updateValue = (evt) => {
     const [job, id, key] = evt.target.name.split("-");
@@ -31,6 +47,8 @@ const render = () => {
   }
 
   const generateElement = (job, labelText, key, index) => {
+    const holder = document.createElement("div");
+
     const field = document.createElement("input");
     field.value = job[key];
     field.name = `job-${index}-${key}`;
@@ -39,23 +57,45 @@ const render = () => {
     const label = document.createElement("label");
     label.innerText = labelText;
 
-    return {field, label}
+    holder.appendChild(label);
+    holder.appendChild(field);
+
+    return holder;
   }
+
+  const generateCloseButton = (index) => {
+    const button = document.createElement("button");
+    button.innerText = "Remover";
+    button.className="remove"
+    button.addEventListener('click', (evt) => {
+      evt.preventDefault();
+      list = list.filter((item) => {
+        return item.ID != index;
+      })
+      render();
+    });
+    return button;
+  }
+
   document.querySelector("#fields").innerHTML = "";
+  const fieldsParent = document.querySelector("#fields");
+
   list.map((job, index) => {
+    const closeButton = generateCloseButton(job.ID);
+    fieldsParent.appendChild(closeButton);
+
     Object.keys(labels).map((key) => {
-      const { field, label } = generateElement(job, labels[key], key, index);
-      document.querySelector("#fields").appendChild(label)
-      document.querySelector("#fields").appendChild(field)
+      const input = generateElement(job, labels[key], key, index);
+      fieldsParent.appendChild(input);
     })
     if (index < list.length-1) document.querySelector("#fields").appendChild(document.createElement("hr"))
   })
 }
 
-const from = new Date("2019-11-10 09:00:00");
-const to = new Date("2019-11-11 12:00:00");
-
 const filterList = (list) => {
+  const from = new Date(document.querySelector("#date_from").value);
+  const to = new Date(document.querySelector("#date_to").value);
+
   let count = 0;
   let index = 0;
   
@@ -65,7 +105,7 @@ const filterList = (list) => {
     // sum estimates
     count += Number(item.estimate);
     if (queues[index] == undefined) queues[index] = [];
-    queues[index].push(item);
+    queues[index].push(item.ID);
     if (count >= 8) index++;
   }
 
@@ -87,9 +127,7 @@ const filterList = (list) => {
 document.querySelector("#button").addEventListener("click", (evt) => {
   evt.preventDefault();
   const result = filterList(list);
-  console.log(result);
-  list = [];
-  render();
+  document.querySelector("#debug").innerHTML = `<p>${JSON.stringify(result)}</p>`;
 })
 
 render();
