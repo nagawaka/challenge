@@ -26,19 +26,23 @@ const filter = (item) => {
   return (date_end > from && date_end <= to) ? true : false;
 }
 
+const sort = (a, b) => new Date(a.date_end) > new Date(b.date_end);
+const sumEstimates = (item) => {
+  // sum estimates
+  count += item.estimate;
+  if (queues[index] == undefined) queues[index] = [];
+  queues[index].push(item.ID);
+  if (count >= 8) index++;
+}
+
 let count = 0;
 let index = 0;
 
 const queues = [];
 
 list.filter(filter)
-  .map((item) => {
-    // sum estimates
-    count += item.estimate;
-    if (count >= 8) index++;
-    if (queues[index] == undefined) queues[index] = [];
-    queues[index].push(item.ID);
-  });
+  .sort(sort)
+  .map(sumEstimates);
 
 console.log("result");
 console.log(queues);
