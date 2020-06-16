@@ -21,15 +21,28 @@ const from = new Date("2019-11-10 09:00:00");
 const to = new Date("2019-11-11 12:00:00");
 
 const filter = (item) => {
-  return (item.date_end > from && item.date_end <= to) ? true : false;
+  // filters date_end inbetween two dates
+  const date_end = new Date(item.date_end);
+  return (date_end > from && date_end <= to) ? true : false;
 }
 
-const result = list.map((job) => {
-  return {
-    ...job,
-    date_end: new Date(job.date_end)
-  }
-}).filter(filter);
-console.log(result);
+let count = 0;
+let index = 0;
+
+const queues = [
+  [],
+];
+
+list.filter(filter)
+  .map((item) => {
+    // sum estimates
+    count += item.estimate;
+    if (count >= 8) index++;
+    if (queues[index] == undefined) queues[index] = [];
+    queues[index].push(item.ID);
+  });
+
+console.log("result");
+console.log(queues);
 
 document.querySelector("#debug").innerHTML = "output";
