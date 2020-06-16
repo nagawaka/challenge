@@ -30,6 +30,7 @@ const lastId = () => {
 }
 
 document.querySelector("#add").addEventListener('click', (evt) => {
+  // adds data
   evt.preventDefault();
   list.push({
     "ID": list.length > 0 ? lastId(list) : 1,
@@ -38,9 +39,10 @@ document.querySelector("#add").addEventListener('click', (evt) => {
     "estimate": 2,
   });
   render();
-})
+});
 
 const render = () => {
+  // creates form
   const updateValue = (evt) => {
     const [job, id, key] = evt.target.name.split("-");
     list[id][key] = evt.target.value;
@@ -67,11 +69,13 @@ const render = () => {
     const button = document.createElement("button");
     button.innerText = "Remover";
     button.className="remove"
+    button.type = "button";
     button.addEventListener('click', (evt) => {
       evt.preventDefault();
       list = list.filter((item) => {
         return item.ID != index;
       })
+
       render();
     });
     return button;
@@ -93,6 +97,7 @@ const render = () => {
 }
 
 const filterList = (list) => {
+  // filters
   const from = new Date(document.querySelector("#date_from").value);
   const to = new Date(document.querySelector("#date_to").value);
 
